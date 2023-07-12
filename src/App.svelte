@@ -12,7 +12,7 @@
     InlineNotification,
   } from "carbon-components-svelte";
 
-  import Home from "./routes/Home.svelte";
+  import Home from "./pages/Home.svelte";
 
 </script>
 
@@ -26,10 +26,6 @@
       <div slot="skip-to-content">
         <SkipToContent />
       </div>
-
-      <HeaderNav>
-        <HeaderNavItem text="Home" href="/" />
-      </HeaderNav>
     </Header>
 
     <Content>
