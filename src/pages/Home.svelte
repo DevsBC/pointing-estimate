@@ -31,8 +31,6 @@
     return result;
   }
 
-  console.log(fibonacci(5))
-
   function setUser(e) {
     const selectedId = e.detail.selectedId;
     const u = users.find(u => u.id === selectedId);
@@ -50,7 +48,9 @@
     <Button>Show</Button>
   </ButtonSet>
 
-  <Tag>IBM Cloud</Tag>
+  {#each fibonacci(5) as point}
+    <Tag interactive>{point}</Tag>
+  {/each}
   
   {#each users as user} 
     <p>{user.name} - {user.points}</p>
