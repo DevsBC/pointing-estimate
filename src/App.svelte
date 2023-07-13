@@ -1,19 +1,14 @@
 <script>
+  // @ts-nocheck
   import { Router, links, Route } from "svelte-routing";
   import {
     Header,
-    HeaderNav,
-    HeaderNavItem,
-    SideNav,
-    SideNavItems,
-    SideNavLink,
     SkipToContent,
     Content,
     InlineNotification,
   } from "carbon-components-svelte";
 
-  import Home from "./pages/Home.svelte";
-
+  import Home from "./pages/Home.svelte"; 
 </script>
 
 <div use:links>
