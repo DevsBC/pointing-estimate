@@ -1,8 +1,8 @@
 <script>
   // @ts-nocheck
-  import { collection, onSnapshot, doc, updateDoc, writeBatch } from "firebase/firestore";
+  import { onSnapshot, doc, updateDoc, writeBatch } from "firebase/firestore";
   import { db, baseCollection } from "../lib/database";
-  import { Checkbox, Dropdown, Form, FormGroup, Modal, RadioButton, RadioButtonGroup, RadioTile, TileGroup } from "carbon-components-svelte";
+  import { Checkbox, Form, FormGroup, Modal, RadioButton, RadioButtonGroup, RadioTile, TileGroup } from "carbon-components-svelte";
   import { Button, Tag } from "carbon-components-svelte";
   import {
     StructuredList,
@@ -11,6 +11,8 @@
     StructuredListCell,
     StructuredListBody,
   } from "carbon-components-svelte";
+  export let users = [];
+  export let user;
 
   const skills = [
     { key: 'Expert', value: 1 },
@@ -44,26 +46,13 @@
 
   const colors = ["red", "magenta", "purple", "cyan", "teal", "green", "gray", "cool-gray", "warm-gray"];
 
-  let users = [];
-  let items = [];
-  let user;
+  const admins = ["F2E4PvgcoP2g2uwH7Wpf", "MPlPcsaiB4k6NysYRaz5", "zn3qccqF9nyBKko8VGH7"];
+
   let show = false;
   let newPoints = 0;
   let finalPoints = 0;
   let open = false;
 
-  if (localStorage.getItem("user")) {
-    user = JSON.parse(localStorage.getItem("user"));
-  }
-
-  onSnapshot(collection(db, `${baseCollection}/users`), (querySnapshot) => {
-    const data = [];
-    querySnapshot.forEach((doc) => {
-      data.push(doc.data());
-    });
-    users = [...data];
-    items = users.map(u => ({ id: u.id, text: u.name, total: u.total }));
-  });
 
   onSnapshot(doc(db, `${baseCollection}/estimates/new`), (doc) => {
     const data = doc.data();
@@ -78,13 +67,6 @@
     }
 
     return result;
-  }
-
-  function setUser(e) {
-    const selectedId = e.detail.selectedId;
-    const u = users.find(u => u.id === selectedId);
-    user = { id: u.id, name: u.name };
-    localStorage.setItem("user", JSON.stringify(user));
   }
 
   async function selectUser(id, checked) {
@@ -160,9 +142,8 @@
     return colors[randomIndex];
   }
 
-  $: title = user ? "Story Points" : "Join session";
   $: totalUsers = users.length;
-  $: pointsArray = users.map(u => u.points);
+  $: pointsArray = users.filter(u => u.points > 0).map(u => u.points);
   $: pointsTotal = pointsArray.reduce((a, b) => a + b, 0);
   $: average = Math.round((pointsTotal / totalUsers)) || 0;
   $: min = Math.min(...pointsArray)
@@ -171,11 +152,17 @@
   $: userAssigned = users.find(u => u.assigned);
 
 </script>
-<Button style="float:right;" on:click={startNew}>Start new session</Button>
-<h2>{title}</h2>
+
 {#if user }
+{#if admins.includes(user.id)}
+<Button style="float:right;" on:click={startNew}>Start new session</Button>
+{/if}
+  <h1>{user.name}</h1>
+  <h2>Story Points</h2>
+    
   <div class="row">
     <div class="column">
+      <Tag interactive on:click={() => setPoints(0)}>?</Tag>
       {#each fibonacci(5) as point}
           <Tag interactive 
             type={getColor()}
@@ -188,7 +175,6 @@
           <StructuredListRow head>
             <StructuredListCell head>Players</StructuredListCell>
             <StructuredListCell head>Points</StructuredListCell>
-            <StructuredListCell head>Total</StructuredListCell>
             <StructuredListCell head>Assigned</StructuredListCell>
           </StructuredListRow>
         </StructuredListHead>
@@ -197,7 +183,6 @@
             <StructuredListRow>
               <StructuredListCell>{ u.name }</StructuredListCell>
               <StructuredListCell> <b>{ (show || user.id == u.id) ? u.points : ( u.points > 0 ? "READY" :"?")}</b></StructuredListCell>
-              <StructuredListCell> { u.total }</StructuredListCell>
               <StructuredListCell><Checkbox checked={u.assigned} on:change={(e) => selectUser(u.id, e.target.checked)}/></StructuredListCell>
             </StructuredListRow>
           {/each}
@@ -225,9 +210,6 @@
     </div>
     
   </div>
-
-  {:else}
-  <Dropdown {items} on:select={(e) => setUser(e)} />
 {/if}
 
 <Modal  

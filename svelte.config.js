@@ -1,8 +1,7 @@
-const { optimizeImports } = require('carbon-preprocess-svelte');
-const sveltePreprocess = require('svelte-preprocess');
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
-module.exports = {
+export default {
   // Consult https://github.com/sveltejs/svelte-preprocess
   // for more information about preprocessors
-  preprocess: [sveltePreprocess(), optimizeImports()],
+  preprocess: vitePreprocess()
 };

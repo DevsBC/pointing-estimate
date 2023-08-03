@@ -17,24 +17,3 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
 export const baseCollection = 'pointing-estimate/1';
-
-export function getUsers() {
-  return toPromise(`${baseCollection}/users`);
-}
-
-function toPromise(ref) {
-  let resolveValue;
-  let error;
-  const promise = new Promise((resolve, reject) => {
-    (resolveValue = resolve), (error = reject);
-  });
-
-  onSnapshot(collection(db, ref), (querySnapshot) => {
-    const data = [];
-    querySnapshot.forEach((doc) => {
-      data.push(doc.data());
-    });
-    resolveValue(data);
-  });
-  return promise;
-}
