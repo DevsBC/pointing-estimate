@@ -142,10 +142,10 @@
     return colors[randomIndex];
   }
 
-  $: totalUsers = users.length;
+  $: totalUsers = users.filter(u => u.points > 0).length;
   $: pointsArray = users.filter(u => u.points > 0).map(u => u.points);
   $: pointsTotal = pointsArray.reduce((a, b) => a + b, 0);
-  $: average = Math.round((pointsTotal / totalUsers)) || 0;
+  $: average = (pointsTotal / totalUsers)|| 0;
   $: min = Math.min(...pointsArray)
   $: max = Math.max(...pointsArray);
   $: newAverage = Math.round((newPoints + average) / 2);
